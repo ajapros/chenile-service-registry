@@ -135,6 +135,12 @@ list-origin-tags:
 delete-origin-tag: check-tag
 	git push --delete origin $(tag)
 
+
+## push-tags: Push all tags from local to origin
+.PHONY: push-tags
+push-tags: 
+	git push --tags origin 
+
 ## delete-local-tag: Delete a local tag
 .PHONY: delete-local-tag
 delete-local-tag: check-tag
