@@ -6,11 +6,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+
 public class ServiceRegistryCache {
     private Map<ServiceKey, ChenileRemoteServiceDefinition> services = new HashMap<>();
+    private Map<String,ChenileRemoteServiceDefinition> latestVersionOfServices = new HashMap<>();
 
     public void store(ChenileRemoteServiceDefinition entity) {
         this.services.put(new ServiceKey(entity),entity);
+        String id = entity.serviceId;
+        String version = entity.serviceVersion;
+        ChenileRemoteServiceDefinition sd = latestVersionOfServices.get(id);
+        if (sd == null || sd.serviceVersion.compareTo(version) < 0){
+            latestVersionOfServices.put(id,entity);
+        }
+    }
+
+    public ChenileRemoteServiceDefinition retrieve(String serviceId){
+        return latestVersionOfServices.get(serviceId);
     }
 
     public ChenileRemoteServiceDefinition retrieve(String serviceId, String serviceVersion) {

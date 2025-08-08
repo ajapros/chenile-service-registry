@@ -1,0 +1,12 @@
+<!-- Set up a cache of 2 hours -->
+<cache name="services"
+       maxEntriesLocalHeap="400"
+       maxEntriesLocalDisk="600"
+       eternal="false"
+       diskSpoolBufferSizeMB="20"
+       timeToIdleSeconds="12800"
+       timeToLiveSeconds="12800"
+       memoryStoreEvictionPolicy="LFU"
+       transactionalMode="off">
+    <persistence strategy="localTempSwap"/>
+</cache>

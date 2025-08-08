@@ -56,6 +56,6 @@ public class ServiceRegistryInitializer implements ApplicationListener<Applicati
 
     @Override
     public int getOrder() {
-        return 10001;
+        return 50001;
     }
 }

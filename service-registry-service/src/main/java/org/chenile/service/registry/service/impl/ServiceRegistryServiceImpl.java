@@ -34,12 +34,24 @@ public class ServiceRegistryServiceImpl implements ServiceRegistryService {
     }
 
     @Override
-    public ChenileRemoteServiceDefinition retrieve(String serviceId, String serviceVersion) {
+    public ChenileRemoteServiceDefinition retrieveByIdVersion(String serviceId, String serviceVersion) {
         ChenileRemoteServiceDefinition entity = serviceRegistryCache.retrieve(serviceId,serviceVersion);
         if(entity != null) return entity;
         throw new NotFoundException(1500,"Unable to find service registry with Service ID " + serviceId + " and version " + serviceVersion);
     }
 
+    @Override
+    public ChenileRemoteServiceDefinition retrieveById(String serviceId) {
+        ChenileRemoteServiceDefinition entity = serviceRegistryCache.retrieve(serviceId);
+        if(entity != null) return entity;
+        throw new NotFoundException(1500,"Unable to find service registry with Service ID " + serviceId );
+    }
+
+    /**
+     *
+     * @param id - the auto generated ID
+     * @return the service
+     */
     public ChenileRemoteServiceDefinition retrieveFromDb(String id) {
         Optional<ChenileRemoteServiceDefinition> entity = serviceregistryRepository.findById(id);
         if (entity.isPresent()) return entity.get();

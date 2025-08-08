@@ -21,10 +21,19 @@ public class ServiceRegistryController extends ControllerSupport{
         }
 
     @GetMapping("/serviceregistry/{id}/{version}")
-    public ResponseEntity<GenericResponse<ChenileRemoteServiceDefinition>> retrieve(
-    HttpServletRequest httpServletRequest,
-    @PathVariable("id") String id,
-    @PathVariable("version") String version){
-    return process(httpServletRequest,id,version);
+    public ResponseEntity<GenericResponse<ChenileRemoteServiceDefinition>> retrieveByIdVersion(
+        HttpServletRequest httpServletRequest,
+        @PathVariable("id") String id,
+        @PathVariable("version") String version){
+        System.out.println("id = " + id + " version = " + version);
+        return process(httpServletRequest,id,version);
+    }
+
+    @GetMapping("/serviceregistry/{id}")
+    public ResponseEntity<GenericResponse<ChenileRemoteServiceDefinition>> retrieveById(
+            HttpServletRequest httpServletRequest,
+            @PathVariable("id") String id){
+        System.out.println("id = " + id);
+        return process(httpServletRequest,id);
     }
 }

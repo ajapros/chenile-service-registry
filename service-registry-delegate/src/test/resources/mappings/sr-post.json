@@ -1,0 +1,45 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/serviceregistry",
+    "headers": {
+      "Accept": {
+        "equalTo": "application/json",
+        "caseInsensitive": true
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "success": true,
+      "code": "200",
+      "payload": {
+        "id": "id1",
+        "serviceId": "abc",
+        "serviceVersion": "v1",
+        "moduleName": "m1",
+        "operations": [
+          {
+            "id": "op_id1",
+            "name": "save",
+            "url": "/save",
+            "httpMethod": "POST",
+            "params": [
+              {
+                "id": "pid_1",
+                "name": "entity",
+                "paramClassName": "org.chenile.service.registry.model.ChenileRemoteServiceDefinition",
+                "type": "BODY"
+              }
+            ],
+            "consumes": "application/json"
+          }
+        ]
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

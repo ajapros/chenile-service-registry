@@ -42,6 +42,6 @@ public class RemoteServiceRegistryInitializer implements ApplicationListener<App
 
     @Override
     public int getOrder() {
-        return 10001;
+        return 50000;
     }
 }

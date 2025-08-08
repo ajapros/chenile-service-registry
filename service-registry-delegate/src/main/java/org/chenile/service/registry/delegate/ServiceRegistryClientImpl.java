@@ -7,8 +7,11 @@ import org.chenile.base.response.GenericResponse;
 import org.chenile.service.registry.cache.ServiceRegistryCache;
 import org.chenile.service.registry.model.ChenileRemoteServiceDefinition;
 import org.chenile.service.registry.service.ServiceRegistryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -18,7 +21,7 @@ import java.util.List;
 
 @PropertySource("classpath:${chenile.properties:chenile.properties}")
 public class ServiceRegistryClientImpl implements ServiceRegistryService {
-
+    Logger logger = LoggerFactory.getLogger(getClass());
     @Value("${chenile.remote.service.registry:}")
     private String chenileRemoteServiceRegistry;
     private final RestTemplate restTemplate;
@@ -40,7 +43,9 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
         return headers;
     }
 
+
     @Override
+    @CachePut("xxx")
     public ChenileRemoteServiceDefinition save(ChenileRemoteServiceDefinition serviceDefinition) {
         serviceDefinition = writeToRemote(serviceDefinition);
         serviceRegistryCache.store(serviceDefinition);
@@ -67,7 +72,8 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
                 GenericResponse<ChenileRemoteServiceDefinition> responseBody = response.getBody();
                 return responseBody.getData();
             } else {
-                throw new RuntimeException("Master with error code "+response.getStatusCode());
+                logger.warn("Invalid status code returned from remote service registry. Code =  " + response.getStatusCode());
+                return null;
             }
 
         } catch (JsonProcessingException e) {
@@ -76,21 +82,30 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
     }
 
     @Override
-    public ChenileRemoteServiceDefinition retrieve(String serviceId, String serviceVersion) {
+    public ChenileRemoteServiceDefinition retrieveByIdVersion(String serviceId, String serviceVersion) {
         ChenileRemoteServiceDefinition csrd = serviceRegistryCache.retrieve(serviceId, serviceVersion);
         if (csrd == null){
             csrd = retrieveFromRemote(serviceId,serviceVersion);
-            if (csrd == null){
-                throw new NotFoundException(1501,"Unable to retrieve service with service ID = " +
-                        serviceId + " and version = " + serviceVersion);
-            }
-            serviceRegistryCache.store(csrd);
+            if(csrd != null)
+                serviceRegistryCache.store(csrd);
+        }
+        return csrd;
+    }
+
+    @Override
+    public ChenileRemoteServiceDefinition retrieveById(String serviceId) {
+        ChenileRemoteServiceDefinition csrd = serviceRegistryCache.retrieve(serviceId);
+        if(csrd == null){
+            csrd = retrieveFromRemote(serviceId);
+            if(csrd != null)
+                serviceRegistryCache.store(csrd);
         }
         return csrd;
     }
 
     private ChenileRemoteServiceDefinition retrieveFromRemote(String serviceId, String serviceVersion) {
-        String url = chenileRemoteServiceRegistry + "/serviceregistry/" + serviceId + "/" + serviceVersion ;
+        String url = chenileRemoteServiceRegistry + "/serviceregistry/" + serviceId;
+        if (serviceVersion != null) url = url + "/" + serviceVersion ;
         HttpHeaders headers = headers();
         try {
             HttpEntity<Object> entity = new HttpEntity<>(headers);
@@ -105,11 +120,17 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
                 GenericResponse<ChenileRemoteServiceDefinition> responseBody = response.getBody();
                 return responseBody.getData();
             } else {
-                throw new RuntimeException("Master with error code "+response.getStatusCode());
+                logger.warn("Error status code from remote. Code = " + response.getStatusCode());
+                return null;
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Error in Getting results from remote service registry", e);
+            logger.warn("Error status code from remote. ",e);
+            return null;
         }
+    }
+
+    private ChenileRemoteServiceDefinition retrieveFromRemote(String serviceId){
+        return retrieveFromRemote(serviceId,null);
     }
 }

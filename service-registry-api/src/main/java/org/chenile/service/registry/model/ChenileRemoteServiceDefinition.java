@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.chenile.core.model.ChenileServiceDefinition;
 import org.chenile.core.model.OperationDefinition;
 import org.chenile.jpautils.entity.BaseJpaEntity;
+import org.chenile.owiz.Command;
+import org.chenile.service.registry.context.RemoteChenileExchange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +21,18 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
     public List<ChenileRemoteOperationDefinition> operations;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "client_service_interceptors",
+            joinColumns = @JoinColumn(name = "id", referencedColumnName = "ID")
+    )
+    @Column(name = "interceptor_name")
+    public List<String> clientInterceptorNames;
+    @Transient public List<Command<RemoteChenileExchange>> clientInterceptors ;
+
     public ChenileRemoteServiceDefinition() {}
     public ChenileRemoteServiceDefinition(ChenileServiceDefinition serviceDefinition){
+        this.clientInterceptorNames = serviceDefinition.getClientInterceptorComponentNames();
         this.serviceId = serviceDefinition.getId();
         this.serviceVersion = serviceDefinition.getVersion();
         this.moduleName = serviceDefinition.getModuleName();
