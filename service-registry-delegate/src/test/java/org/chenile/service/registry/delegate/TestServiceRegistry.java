@@ -9,11 +9,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
@@ -28,8 +31,13 @@ public class TestServiceRegistry {
     @Test public void test1Param() {
 		ChenileRemoteServiceDefinition sd = serviceRegistry.retrieveById("abc");
 		assertEquals("abc",sd.serviceId);
-		assertEquals("v1",sd.serviceVersion);
+		assertEquals("v8",sd.serviceVersion);
 		assertEquals("m1",sd.moduleName);
+		assertNotNull(sd.operations);
+		assertEquals(1,sd.operations.size());
+		ParameterizedTypeReference<List<String>> ptr = new ParameterizedTypeReference<List<String>>() {};
+		assertEquals(ptr,sd.operations.get(0).outputAsParameterizedReference);
+		assertEquals(List.class,sd.operations.get(0).output);
     }
 
 	@Test public void test2Params() {
@@ -37,6 +45,11 @@ public class TestServiceRegistry {
 		assertEquals("abc",sd.serviceId);
 		assertEquals("v1",sd.serviceVersion);
 		assertEquals("m1",sd.moduleName);
+		assertNotNull(sd.operations);
+		assertEquals(1,sd.operations.size());
+		ParameterizedTypeReference<Map<String,String>> ptr = new ParameterizedTypeReference<Map<String,String>>() {};
+		assertEquals(ptr,sd.operations.get(0).outputAsParameterizedReference);
+		assertEquals(Map.class,sd.operations.get(0).output);
 	}
 
 	@Test public void test2ParamsInvalidInput() {

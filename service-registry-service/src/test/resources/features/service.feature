@@ -63,11 +63,12 @@ Feature: Tests the serviceregistry Service using a REST client.
           "name":  "op1",
           "description": "op1_description",
           "consumes": "JSON",
+          "outputAsStringReference": "java.util.List<java.lang.String>",
           "params": [
             {
               "name": "param1",
               "description": "param1_description",
-              "paramClassName": "org.chenile.model.DummyModel",
+              "paramClassName": "java.util.List",
               "type": "BODY"
             }
           ]
@@ -88,6 +89,7 @@ Feature: Tests the serviceregistry Service using a REST client.
     And the REST response key "id" is "${id}"
     And the REST response key "serviceId" is "${serviceId}"
     And the REST response key "serviceVersion" is "${serviceVersion}"
+    And the REST response key "operations[0].outputAsStringReference" is "java.util.List<java.lang.String>"
 
 
     

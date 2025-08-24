@@ -17,7 +17,7 @@
       "payload": {
         "id": "id1",
         "serviceId": "abc",
-        "serviceVersion": "v1",
+        "serviceVersion": "v8",
         "moduleName": "m1",
         "operations": [
           {
@@ -25,6 +25,8 @@
             "name": "save",
             "url": "/save",
             "httpMethod": "POST",
+            "outputAsStringReference": "java.util.List<java.lang.String>",
+            "output": "java.util.List",
             "params": [
               {
                 "id": "pid_1",

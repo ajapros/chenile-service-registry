@@ -24,6 +24,8 @@
             "id": "op_id1",
             "name": "save",
             "url": "/save",
+            "outputAsStringReference": "java.util.Map<java.lang.String,java.lang.String>",
+            "output": "java.util.Map",
             "httpMethod": "POST",
             "params": [
               {
