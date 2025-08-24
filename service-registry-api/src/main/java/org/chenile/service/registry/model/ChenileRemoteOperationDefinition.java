@@ -21,7 +21,7 @@ public class ChenileRemoteOperationDefinition extends BaseJpaEntity {
     public String consumes = "JSON";
     public String url;
     public HTTPMethod httpMethod;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "client_op_interceptors",
             joinColumns = @JoinColumn(name = "id", referencedColumnName = "ID")

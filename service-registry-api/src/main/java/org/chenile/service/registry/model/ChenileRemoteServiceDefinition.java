@@ -21,7 +21,7 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
     public List<ChenileRemoteOperationDefinition> operations;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "client_service_interceptors",
             joinColumns = @JoinColumn(name = "id", referencedColumnName = "ID")
