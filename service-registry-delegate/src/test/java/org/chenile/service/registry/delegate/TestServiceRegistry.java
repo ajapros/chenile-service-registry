@@ -28,7 +28,7 @@ public class TestServiceRegistry {
    @Autowired
    ServiceRegistryService serviceRegistry;
       
-    @Test public void test1Param() {
+    @Test public void test1Param() throws ClassNotFoundException {
 		ChenileRemoteServiceDefinition sd = serviceRegistry.retrieveById("abc");
 		assertEquals("abc",sd.serviceId);
 		assertEquals("v8",sd.serviceVersion);
@@ -37,10 +37,10 @@ public class TestServiceRegistry {
 		assertEquals(1,sd.operations.size());
 		ParameterizedTypeReference<List<String>> ptr = new ParameterizedTypeReference<List<String>>() {};
 		assertEquals(ptr,sd.operations.get(0).outputAsParameterizedReference);
-		assertEquals(List.class,sd.operations.get(0).output);
+		assertEquals(List.class,Class.forName( sd.operations.get(0).output));
     }
 
-	@Test public void test2Params() {
+	@Test public void test2Params() throws ClassNotFoundException {
 		ChenileRemoteServiceDefinition sd = serviceRegistry.retrieveByIdVersion("abc","v1");
 		assertEquals("abc",sd.serviceId);
 		assertEquals("v1",sd.serviceVersion);
@@ -49,7 +49,7 @@ public class TestServiceRegistry {
 		assertEquals(1,sd.operations.size());
 		ParameterizedTypeReference<Map<String,String>> ptr = new ParameterizedTypeReference<Map<String,String>>() {};
 		assertEquals(ptr,sd.operations.get(0).outputAsParameterizedReference);
-		assertEquals(Map.class,sd.operations.get(0).output);
+		assertEquals(Map.class,Class.forName(sd.operations.get(0).output));
 	}
 
 	@Test public void test2ParamsInvalidInput() {

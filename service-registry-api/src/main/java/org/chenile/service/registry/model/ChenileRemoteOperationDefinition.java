@@ -27,7 +27,7 @@ public class ChenileRemoteOperationDefinition extends BaseJpaEntity {
     public List<ChenileRemoteParamDefinition> params;
     public String consumes = "JSON";
     public String url;
-    public Class<?> output;
+    public String output;
     public HTTPMethod httpMethod;
 
 
@@ -68,7 +68,7 @@ public class ChenileRemoteOperationDefinition extends BaseJpaEntity {
             this.outputAsStringReference = od.getOutputAsParameterizedReference().getType().getTypeName();
             this.outputAsParameterizedReference = od.getOutputAsParameterizedReference();
         }
-        this.output = od.getOutput();
+        this.output = od.getOutput()!=null?od.getOutput().getName():null;
         this.params = params;
     }
 
