@@ -2,7 +2,6 @@ package org.chenile.service.registry.delegate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.chenile.base.exception.NotFoundException;
 import org.chenile.base.response.GenericResponse;
 import org.chenile.service.registry.cache.ServiceRegistryCache;
 import org.chenile.service.registry.model.ChenileRemoteServiceDefinition;

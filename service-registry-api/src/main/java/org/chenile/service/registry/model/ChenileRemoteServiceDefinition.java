@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "service_definition")
 public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
+    public String baseUrl;
     public String serviceId;
     public String getServiceId(){ return this.serviceId;}
     public String serviceVersion;
@@ -32,6 +33,7 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
 
     public ChenileRemoteServiceDefinition() {}
     public ChenileRemoteServiceDefinition(ChenileServiceDefinition serviceDefinition){
+        this.baseUrl = serviceDefinition.getBaseUrl();
         this.clientInterceptorNames = serviceDefinition.getClientInterceptorComponentNames();
         this.serviceId = serviceDefinition.getId();
         this.serviceVersion = serviceDefinition.getVersion();
