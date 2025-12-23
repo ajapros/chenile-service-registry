@@ -11,8 +11,5 @@ import org.springframework.test.context.ActiveProfiles;
 @PropertySource("classpath:org/chenile/service/registry/TestService.properties")
 @SpringBootApplication(scanBasePackages = {  "org.chenile.configuration", "org.chenile.service.registry.configuration" })
 @ActiveProfiles("unittest")
-public class SpringTestConfig extends SpringBootServletInitializer{
-
-	
-}
+public class SpringTestConfig extends SpringBootServletInitializer{}
 

@@ -1,12 +1,11 @@
 package org.chenile.service.registry.bdd;
 
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import io.cucumber.java.en.Given;
+import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.chenile.service.registry.SpringTestConfig;
-
-import cucumber.api.java.en.Given;
 
 
 /**
@@ -18,7 +17,6 @@ import cucumber.api.java.en.Given;
     * one step in a steps file)<br/>
 */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,classes = SpringTestConfig.class)
-@AutoConfigureMockMvc
 @ActiveProfiles("unittest")
 public class CukesSteps {
 	
