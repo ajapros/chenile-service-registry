@@ -28,6 +28,7 @@ public class ChenileRemoteOperationDefinition extends BaseJpaEntity {
     public String consumes = "JSON";
     public String url;
     public String output;
+    @Enumerated(EnumType.STRING)
     public HTTPMethod httpMethod;
 
 
