@@ -1,7 +1,7 @@
 Feature: Tests if a Local Service (such as ServiceRegistry Service) is present
   in the service registry. This tests start up capability.
  
-  Scenario: Retrieve the Chenile Remote Service Definition first.
+  Scenario: Retrieve the Chenile Remote Service Definition
     Given that "tenant" equals "tenant0"
     And that "entity" equals "serviceregistry"
     And that "employee" equals "E1"
@@ -14,7 +14,7 @@ Feature: Tests if a Local Service (such as ServiceRegistry Service) is present
     And the REST response key "serviceId" is "${serviceId}"
     And the REST response key "serviceVersion" is "${serviceVersion}"
 
-  Scenario: Retrieve the Chenile Remote Service Definition first without the version
+  Scenario: Retrieve the Chenile Remote Service Definition without the version
     Given that "tenant" equals "tenant0"
     And that "entity" equals "serviceregistry"
     And that "employee" equals "E1"

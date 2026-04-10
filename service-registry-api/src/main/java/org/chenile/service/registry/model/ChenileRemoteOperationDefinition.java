@@ -79,6 +79,10 @@ public class ChenileRemoteOperationDefinition extends BaseJpaEntity {
 
     public void setOutputAsStringReference(String outputAsStringReference) {
         this.outputAsStringReference = outputAsStringReference;
+        if (outputAsStringReference == null || outputAsStringReference.isBlank()) {
+            this.outputAsParameterizedReference = null;
+            return;
+        }
         try {
             this.outputAsParameterizedReference = ChenileTypeUtils.makeParameterizedTypeReference(outputAsStringReference);
         }catch(Exception ignore){

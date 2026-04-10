@@ -5,6 +5,8 @@ import org.chenile.base.response.GenericResponse;
 import org.chenile.http.annotation.ChenileController;
 import org.chenile.http.handler.ControllerSupport;
 import org.chenile.service.registry.model.ChenileRemoteServiceDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @ChenileController(value = "serviceregistryService", serviceName = "_serviceregistryService_",
 		healthCheckerName = "serviceregistryHealthChecker")
 public class ServiceRegistryController extends ControllerSupport{
-	
+	Logger logger = LoggerFactory.getLogger(ServiceRegistryController.class);
     @PostMapping("/serviceregistry")
     public ResponseEntity<GenericResponse<ChenileRemoteServiceDefinition>> save(
         HttpServletRequest httpServletRequest,
@@ -25,7 +27,7 @@ public class ServiceRegistryController extends ControllerSupport{
         HttpServletRequest httpServletRequest,
         @PathVariable("id") String id,
         @PathVariable("version") String version){
-        System.out.println("id = " + id + " version = " + version);
+        logger.info("id = " + id + " version = " + version);
         return process(httpServletRequest,id,version);
     }
 
@@ -33,7 +35,7 @@ public class ServiceRegistryController extends ControllerSupport{
     public ResponseEntity<GenericResponse<ChenileRemoteServiceDefinition>> retrieveById(
             HttpServletRequest httpServletRequest,
             @PathVariable("id") String id){
-        System.out.println("id = " + id);
+        logger.info("id = " + id);
         return process(httpServletRequest,id);
     }
 }
