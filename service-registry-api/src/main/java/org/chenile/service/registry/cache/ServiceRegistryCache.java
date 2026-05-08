@@ -12,6 +12,15 @@ import java.util.Objects;
 public class ServiceRegistryCache {
     private Map<ServiceKey, ChenileRemoteServiceDefinition> services = new HashMap<>();
     private Map<String,ChenileRemoteServiceDefinition> latestVersionOfServices = new HashMap<>();
+    private final boolean enforceImmutableServiceVersions;
+
+    public ServiceRegistryCache() {
+        this(false);
+    }
+
+    public ServiceRegistryCache(boolean enforceImmutableServiceVersions) {
+        this.enforceImmutableServiceVersions = enforceImmutableServiceVersions;
+    }
 
     public void store(ChenileRemoteServiceDefinition entity) {
         this.services.put(new ServiceKey(entity),entity);
@@ -32,9 +41,11 @@ public class ServiceRegistryCache {
     }
 
     public boolean exists(ChenileRemoteServiceDefinition entity){
+        if (enforceImmutableServiceVersions) {
+            return this.services.containsKey(new ServiceKey(entity));
+        }
         ChenileRemoteServiceDefinition csrd = this.services.get(new ServiceKey(entity));
         return equalsCheck(csrd,entity);
-        // return this.services.containsKey(new ServiceKey(entity));
     }
 
     /**

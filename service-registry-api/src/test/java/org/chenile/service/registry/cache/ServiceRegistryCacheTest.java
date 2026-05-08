@@ -16,7 +16,7 @@ class ServiceRegistryCacheTest {
 
     @Test
     void existsReturnsTrueForEquivalentServiceDefinition() {
-        ServiceRegistryCache cache = new ServiceRegistryCache();
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
         ChenileRemoteServiceDefinition definition = sampleService();
         cache.store(definition);
 
@@ -25,7 +25,7 @@ class ServiceRegistryCacheTest {
 
     @Test
     void existsReturnsFalseWhenOperationChanges() {
-        ServiceRegistryCache cache = new ServiceRegistryCache();
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
         cache.store(sampleService());
 
         ChenileRemoteServiceDefinition changed = sampleService();
@@ -36,13 +36,24 @@ class ServiceRegistryCacheTest {
 
     @Test
     void existsReturnsFalseWhenParamChanges() {
-        ServiceRegistryCache cache = new ServiceRegistryCache();
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
         cache.store(sampleService());
 
         ChenileRemoteServiceDefinition changed = sampleService();
         changed.operations.get(0).params.get(0).paramClassName = "java.lang.Integer";
 
         assertFalse(cache.exists(changed));
+    }
+
+    @Test
+    void existsReturnsTrueForSameIdAndVersionWhenImmutableVersionsAreEnforced() {
+        ServiceRegistryCache cache = new ServiceRegistryCache(true);
+        cache.store(sampleService());
+
+        ChenileRemoteServiceDefinition changed = sampleService();
+        changed.operations.get(0).url = "/orders/search/v2";
+
+        assertTrue(cache.exists(changed));
     }
 
     private ChenileRemoteServiceDefinition sampleService() {
