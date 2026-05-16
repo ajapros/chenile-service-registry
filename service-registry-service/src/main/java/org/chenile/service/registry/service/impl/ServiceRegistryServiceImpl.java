@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 public class ServiceRegistryServiceImpl implements ServiceRegistryService {
@@ -47,6 +49,16 @@ public class ServiceRegistryServiceImpl implements ServiceRegistryService {
         throw new NotFoundException(1500,"Unable to find service registry with Service ID " + serviceId );
     }
 
+    @Override
+    public List<ChenileRemoteServiceDefinition> list() {
+        return serviceregistryRepository.findAll().stream()
+                .sorted(Comparator
+                        .comparing((ChenileRemoteServiceDefinition definition) -> nullSafe(definition.serviceId))
+                        .thenComparing(definition -> nullSafe(definition.serviceVersion))
+                        .thenComparing(definition -> nullSafe(definition.baseUrl)))
+                .toList();
+    }
+
     /**
      *
      * @param id - the auto generated ID
@@ -56,5 +68,9 @@ public class ServiceRegistryServiceImpl implements ServiceRegistryService {
         Optional<ChenileRemoteServiceDefinition> entity = serviceregistryRepository.findById(id);
         if (entity.isPresent()) return entity.get();
         throw new NotFoundException(1500,"Unable to find service registry with ID " + id);
+    }
+
+    private String nullSafe(String value) {
+        return value == null ? "" : value;
     }
 }

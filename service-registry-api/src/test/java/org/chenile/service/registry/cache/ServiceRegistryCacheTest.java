@@ -56,12 +56,24 @@ class ServiceRegistryCacheTest {
         assertTrue(cache.exists(changed));
     }
 
+    @Test
+    void existsReturnsFalseWhenHealthCheckerChanges() {
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
+        cache.store(sampleService());
+
+        ChenileRemoteServiceDefinition changed = sampleService();
+        changed.healthCheckerName = "otherHealthChecker";
+
+        assertFalse(cache.exists(changed));
+    }
+
     private ChenileRemoteServiceDefinition sampleService() {
         ChenileRemoteServiceDefinition service = new ChenileRemoteServiceDefinition();
         service.baseUrl = "http://localhost:8080";
         service.serviceId = "orders";
         service.serviceVersion = "2.1.19";
         service.moduleName = "orders-module";
+        service.healthCheckerName = "ordersHealthChecker";
         service.clientInterceptorNames = List.of("authInterceptor", "traceInterceptor");
         service.operations = List.of(sampleOperation());
         return service;

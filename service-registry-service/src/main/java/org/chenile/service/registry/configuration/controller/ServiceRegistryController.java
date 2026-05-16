@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @ChenileController(value = "serviceregistryService", serviceName = "_serviceregistryService_",
 		healthCheckerName = "serviceregistryHealthChecker")
@@ -21,6 +23,12 @@ public class ServiceRegistryController extends ControllerSupport{
         @RequestBody ChenileRemoteServiceDefinition entity){
         return process(httpServletRequest,entity);
         }
+
+    @GetMapping("/serviceregistry")
+    public ResponseEntity<GenericResponse<List<ChenileRemoteServiceDefinition>>> list(
+            HttpServletRequest httpServletRequest){
+        return process(httpServletRequest);
+    }
 
     @GetMapping("/serviceregistry/{id}/{version}")
     public ResponseEntity<GenericResponse<ChenileRemoteServiceDefinition>> retrieveByIdVersion(

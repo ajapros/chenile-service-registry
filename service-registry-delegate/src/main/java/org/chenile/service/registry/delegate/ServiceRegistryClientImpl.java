@@ -102,6 +102,36 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
         return csrd;
     }
 
+    @Override
+    public List<ChenileRemoteServiceDefinition> list() {
+        String url = chenileRemoteServiceRegistry + "/serviceregistry";
+        HttpHeaders headers = headers();
+        try {
+            HttpEntity<Object> entity = new HttpEntity<>(headers);
+            ResponseEntity<GenericResponse<List<ChenileRemoteServiceDefinition>>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<GenericResponse<List<ChenileRemoteServiceDefinition>>>() {}
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                GenericResponse<List<ChenileRemoteServiceDefinition>> responseBody = response.getBody();
+                List<ChenileRemoteServiceDefinition> services = responseBody.getData();
+                if (services != null) {
+                    services.forEach(serviceRegistryCache::store);
+                }
+                return services;
+            } else {
+                logger.warn("Error status code from remote. Code = " + response.getStatusCode());
+                return List.of();
+            }
+        } catch (Exception e) {
+            logger.warn("Error retrieving service registry list from remote.", e);
+            return List.of();
+        }
+    }
+
     private ChenileRemoteServiceDefinition retrieveFromRemote(String serviceId, String serviceVersion) {
         String url = chenileRemoteServiceRegistry + "/serviceregistry/" + serviceId;
         if (serviceVersion != null) url = url + "/" + serviceVersion ;

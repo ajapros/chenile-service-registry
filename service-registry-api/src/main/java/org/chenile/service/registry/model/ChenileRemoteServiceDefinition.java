@@ -18,6 +18,7 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
     public String getServiceId(){ return this.serviceId;}
     public String serviceVersion;
     public String moduleName;
+    public String healthCheckerName;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
     public List<ChenileRemoteOperationDefinition> operations;
@@ -38,6 +39,7 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
         this.serviceId = serviceDefinition.getId();
         this.serviceVersion = serviceDefinition.getVersion();
         this.moduleName = serviceDefinition.getModuleName();
+        this.healthCheckerName = serviceDefinition.getHealthCheckerName();
         List<ChenileRemoteOperationDefinition> ops = new ArrayList<>();
         for (OperationDefinition od : serviceDefinition.getOperations()){
             ChenileRemoteOperationDefinition crod = new ChenileRemoteOperationDefinition(od);

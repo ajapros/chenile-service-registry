@@ -67,6 +67,8 @@ public class ServiceRegistryCache {
             return false;
         if (!Objects.equals(retrievedOne.moduleName, passedOne.moduleName))
             return false;
+        if (!Objects.equals(retrievedOne.healthCheckerName, passedOne.healthCheckerName))
+            return false;
         if (!Objects.equals(retrievedOne.clientInterceptorNames, passedOne.clientInterceptorNames))
             return false;
         if(!compareOperations(retrievedOne.operations, passedOne.operations))
