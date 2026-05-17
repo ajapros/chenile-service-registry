@@ -20,6 +20,14 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
     public String moduleName;
     public String healthCheckerName;
 
+    public String getMonolithName() {
+        return moduleName;
+    }
+
+    public void setMonolithName(String monolithName) {
+        this.moduleName = monolithName;
+    }
+
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
     public List<ChenileRemoteOperationDefinition> operations;
 
@@ -38,7 +46,7 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
         this.clientInterceptorNames = serviceDefinition.getClientInterceptorComponentNames();
         this.serviceId = serviceDefinition.getId();
         this.serviceVersion = serviceDefinition.getVersion();
-        this.moduleName = serviceDefinition.getModuleName();
+        this.moduleName = serviceDefinition.getMonolithName();
         this.healthCheckerName = serviceDefinition.getHealthCheckerName();
         List<ChenileRemoteOperationDefinition> ops = new ArrayList<>();
         for (OperationDefinition od : serviceDefinition.getOperations()){

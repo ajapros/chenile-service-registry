@@ -28,11 +28,12 @@ public class TestServiceRegistry {
    @Autowired
    ServiceRegistryService serviceRegistry;
       
-    @Test public void test1Param() throws ClassNotFoundException {
+	@Test public void test1Param() throws ClassNotFoundException {
 		ChenileRemoteServiceDefinition sd = serviceRegistry.retrieveById("abc");
 		assertEquals("abc",sd.serviceId);
 		assertEquals("v8",sd.serviceVersion);
 		assertEquals("m1",sd.moduleName);
+		assertEquals("m1",sd.getMonolithName());
 		assertNotNull(sd.operations);
 		assertEquals(1,sd.operations.size());
 		ParameterizedTypeReference<List<String>> ptr = new ParameterizedTypeReference<List<String>>() {};
@@ -45,6 +46,7 @@ public class TestServiceRegistry {
 		assertEquals("abc",sd.serviceId);
 		assertEquals("v1",sd.serviceVersion);
 		assertEquals("m1",sd.moduleName);
+		assertEquals("m1",sd.getMonolithName());
 		assertNotNull(sd.operations);
 		assertEquals(1,sd.operations.size());
 		ParameterizedTypeReference<Map<String,String>> ptr = new ParameterizedTypeReference<Map<String,String>>() {};

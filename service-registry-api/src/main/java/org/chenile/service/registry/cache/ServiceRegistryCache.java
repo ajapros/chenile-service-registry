@@ -65,7 +65,7 @@ public class ServiceRegistryCache {
             return false;
         if (!Objects.equals(retrievedOne.serviceVersion, passedOne.serviceVersion))
             return false;
-        if (!Objects.equals(retrievedOne.moduleName, passedOne.moduleName))
+        if (!Objects.equals(retrievedOne.getMonolithName(), passedOne.getMonolithName()))
             return false;
         if (!Objects.equals(retrievedOne.healthCheckerName, passedOne.healthCheckerName))
             return false;

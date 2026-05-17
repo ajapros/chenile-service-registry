@@ -12,7 +12,7 @@ Feature: Tests the serviceregistry Service using a REST client.
     {
       "serviceId": "${serviceId}",
       "serviceVersion": "${serviceVersion}",
-      "moduleName": "module1",
+      "monolithName": "module1",
       "operations": [
         {
           "name":  "op1",
@@ -57,7 +57,7 @@ Feature: Tests the serviceregistry Service using a REST client.
       "serviceId": "${serviceId}",
       "id": "${id}",
       "serviceVersion": "${serviceVersion}",
-      "moduleName": "module1",
+      "monolithName": "module1",
       "operations": [
         {
           "name":  "op1",
