@@ -1,5 +1,7 @@
 package org.chenile.service.registry.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.chenile.core.model.ChenileServiceDefinition;
 import org.chenile.core.model.OperationDefinition;
@@ -17,6 +19,8 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
     public String serviceId;
     public String getServiceId(){ return this.serviceId;}
     public String serviceVersion;
+    @JsonProperty("monolithName")
+    @JsonAlias("moduleName")
     public String moduleName;
     public String healthCheckerName;
 

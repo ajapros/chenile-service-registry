@@ -1,5 +1,6 @@
 package org.chenile.service.registry.cache;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.chenile.core.model.HTTPMethod;
 import org.chenile.core.model.HttpBindingType;
 import org.chenile.service.registry.model.ChenileRemoteOperationDefinition;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ServiceRegistryCacheTest {
@@ -65,6 +67,21 @@ class ServiceRegistryCacheTest {
         changed.healthCheckerName = "otherHealthChecker";
 
         assertFalse(cache.exists(changed));
+    }
+
+    @Test
+    void remoteServiceDefinitionSerializesMonolithNameAndAcceptsModuleName() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ChenileRemoteServiceDefinition service = sampleService();
+
+        String json = objectMapper.writeValueAsString(service);
+        assertTrue(json.contains("\"monolithName\":\"orders-module\""));
+        assertFalse(json.contains("\"moduleName\""));
+
+        ChenileRemoteServiceDefinition legacy = objectMapper.readValue("{\"moduleName\":\"legacy-module\"}",
+                ChenileRemoteServiceDefinition.class);
+        assertTrue("legacy-module".equals(legacy.getMonolithName()));
+        assertNull(legacy.serviceId);
     }
 
     private ChenileRemoteServiceDefinition sampleService() {

@@ -18,7 +18,7 @@
         "id": "id1",
         "serviceId": "abc",
         "serviceVersion": "v8",
-        "moduleName": "m1",
+        "monolithName": "m1",
         "operations": [
           {
             "id": "op_id1",
