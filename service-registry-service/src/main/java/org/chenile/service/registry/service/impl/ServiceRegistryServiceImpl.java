@@ -39,14 +39,14 @@ public class ServiceRegistryServiceImpl implements ServiceRegistryService {
     public ChenileRemoteServiceDefinition retrieveByIdVersion(String serviceId, String serviceVersion) {
         ChenileRemoteServiceDefinition entity = serviceRegistryCache.retrieve(serviceId,serviceVersion);
         if(entity != null) return entity;
-        throw new NotFoundException(1500,"Unable to find service registry with Service ID " + serviceId + " and version " + serviceVersion);
+        throw new NotFoundException("1500","Unable to find service registry with Service ID " + serviceId + " and version " + serviceVersion);
     }
 
     @Override
     public ChenileRemoteServiceDefinition retrieveById(String serviceId) {
         ChenileRemoteServiceDefinition entity = serviceRegistryCache.retrieve(serviceId);
         if(entity != null) return entity;
-        throw new NotFoundException(1500,"Unable to find service registry with Service ID " + serviceId );
+        throw new NotFoundException("1500","Unable to find service registry with Service ID " + serviceId );
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ServiceRegistryServiceImpl implements ServiceRegistryService {
     public ChenileRemoteServiceDefinition retrieveFromDb(String id) {
         Optional<ChenileRemoteServiceDefinition> entity = serviceregistryRepository.findById(id);
         if (entity.isPresent()) return entity.get();
-        throw new NotFoundException(1500,"Unable to find service registry with ID " + id);
+        throw new NotFoundException("1500","Unable to find service registry with ID " + id);
     }
 
     private String nullSafe(String value) {
