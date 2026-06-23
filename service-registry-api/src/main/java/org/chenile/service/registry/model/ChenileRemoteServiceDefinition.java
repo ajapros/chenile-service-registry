@@ -13,11 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "service_definition")
+@Table(name = "service_definition", uniqueConstraints = @UniqueConstraint(
+        name = "uk_service_definition_service_version",
+        columnNames = {"service_id", "service_version"}))
 public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
     public String baseUrl;
+    @Column(name = "service_id", nullable = false)
     public String serviceId;
     public String getServiceId(){ return this.serviceId;}
+    @Column(name = "service_version", nullable = false)
     public String serviceVersion;
     @JsonProperty("monolithName")
     @JsonAlias("moduleName")
@@ -33,6 +37,7 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
     }
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
+    @OrderBy("name ASC, url ASC")
     public List<ChenileRemoteOperationDefinition> operations;
 
     @ElementCollection(fetch = FetchType.EAGER)

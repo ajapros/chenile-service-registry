@@ -24,6 +24,7 @@ public class ChenileRemoteOperationDefinition extends BaseJpaEntity {
     public String description;
     public String name;
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
+    @OrderBy("name ASC, paramClassName ASC")
     public List<ChenileRemoteParamDefinition> params;
     public String consumes = "JSON";
     public String url;

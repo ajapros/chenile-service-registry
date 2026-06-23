@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.chenile.base.response.GenericResponse;
 import org.chenile.service.registry.cache.ServiceRegistryCache;
 import org.chenile.service.registry.model.ChenileRemoteServiceDefinition;
+import org.chenile.service.registry.model.ServiceRegistryDiagnostics;
 import org.chenile.service.registry.service.ServiceRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +47,15 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
     @Override
     @CachePut("xxx")
     public ChenileRemoteServiceDefinition save(ChenileRemoteServiceDefinition serviceDefinition) {
-        serviceDefinition = writeToRemote(serviceDefinition);
-        serviceRegistryCache.store(serviceDefinition);
-        return serviceDefinition;
+        ChenileRemoteServiceDefinition remoteDefinition = writeToRemote(serviceDefinition);
+        if (remoteDefinition == null) {
+            logger.warn("Service definition was not written to remote service registry. serviceId={} serviceVersion={}",
+                    serviceDefinition == null ? null : serviceDefinition.serviceId,
+                    serviceDefinition == null ? null : serviceDefinition.serviceVersion);
+            return serviceDefinition;
+        }
+        serviceRegistryCache.store(remoteDefinition);
+        return remoteDefinition;
     }
 
 
@@ -76,7 +83,11 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
             }
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error serializing payload to JSON", e);
+            logger.warn("Error serializing service registry payload.", e);
+            return null;
+        } catch (Exception e) {
+            logger.warn("Error writing service definition to remote service registry.", e);
+            return null;
         }
     }
 
@@ -129,6 +140,31 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
         } catch (Exception e) {
             logger.warn("Error retrieving service registry list from remote.", e);
             return List.of();
+        }
+    }
+
+    @Override
+    public ServiceRegistryDiagnostics diagnostics() {
+        String url = chenileRemoteServiceRegistry + "/serviceregistry/diagnostics";
+        HttpHeaders headers = headers();
+        try {
+            HttpEntity<Object> entity = new HttpEntity<>(headers);
+            ResponseEntity<GenericResponse<ServiceRegistryDiagnostics>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<GenericResponse<ServiceRegistryDiagnostics>>() {}
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody().getData();
+            } else {
+                logger.warn("Error status code from remote diagnostics. Code = " + response.getStatusCode());
+                return new ServiceRegistryDiagnostics();
+            }
+        } catch (Exception e) {
+            logger.warn("Error retrieving service registry diagnostics from remote.", e);
+            return new ServiceRegistryDiagnostics();
         }
     }
 

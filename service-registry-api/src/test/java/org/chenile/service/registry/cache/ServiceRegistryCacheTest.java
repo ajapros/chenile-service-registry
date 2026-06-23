@@ -48,6 +48,47 @@ class ServiceRegistryCacheTest {
     }
 
     @Test
+    void existsReturnsTrueWhenRetrievedOperationsContainDuplicateJoinRows() {
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
+        ChenileRemoteServiceDefinition persisted = sampleService();
+        persisted.operations = List.of(sampleOperation(), sampleOperation());
+        cache.store(persisted);
+
+        assertTrue(cache.exists(sampleService()));
+    }
+
+    @Test
+    void existsReturnsTrueWhenRetrievedParamsContainDuplicateJoinRows() {
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
+        ChenileRemoteServiceDefinition persisted = sampleService();
+        persisted.operations.get(0).params = List.of(sampleParam(), sampleParam());
+        cache.store(persisted);
+
+        assertTrue(cache.exists(sampleService()));
+    }
+
+    @Test
+    void existsReturnsTrueWhenOperationFetchOrderChanges() {
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
+        ChenileRemoteServiceDefinition persisted = sampleService();
+        ChenileRemoteOperationDefinition second = sampleOperation();
+        second.name = "getOrder";
+        second.url = "/orders/{id}";
+        second.httpMethod = HTTPMethod.GET;
+        persisted.operations = List.of(second, sampleOperation());
+        cache.store(persisted);
+
+        ChenileRemoteServiceDefinition passed = sampleService();
+        ChenileRemoteOperationDefinition passedSecond = sampleOperation();
+        passedSecond.name = "getOrder";
+        passedSecond.url = "/orders/{id}";
+        passedSecond.httpMethod = HTTPMethod.GET;
+        passed.operations = List.of(sampleOperation(), passedSecond);
+
+        assertTrue(cache.exists(passed));
+    }
+
+    @Test
     void existsReturnsTrueForSameIdAndVersionWhenImmutableVersionsAreEnforced() {
         ServiceRegistryCache cache = new ServiceRegistryCache(true);
         cache.store(sampleService());
@@ -67,6 +108,32 @@ class ServiceRegistryCacheTest {
         changed.healthCheckerName = "otherHealthChecker";
 
         assertFalse(cache.exists(changed));
+    }
+
+    @Test
+    void storeIgnoresNullAndInvalidServiceDefinitions() {
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
+        ChenileRemoteServiceDefinition invalid = sampleService();
+        invalid.serviceVersion = null;
+
+        cache.store(null);
+        cache.store(invalid);
+
+        assertFalse(cache.exists("orders", null));
+    }
+
+    @Test
+    void retrieveLatestUsesNumericVersionOrdering() {
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
+        ChenileRemoteServiceDefinition older = sampleService();
+        older.serviceVersion = "2.1.9";
+        ChenileRemoteServiceDefinition newer = sampleService();
+        newer.serviceVersion = "2.1.10";
+
+        cache.store(newer);
+        cache.store(older);
+
+        assertTrue("2.1.10".equals(cache.retrieve("orders").serviceVersion));
     }
 
     @Test

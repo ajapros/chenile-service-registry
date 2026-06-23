@@ -5,6 +5,7 @@ import org.chenile.base.response.GenericResponse;
 import org.chenile.http.annotation.ChenileController;
 import org.chenile.http.handler.ControllerSupport;
 import org.chenile.service.registry.model.ChenileRemoteServiceDefinition;
+import org.chenile.service.registry.model.ServiceRegistryDiagnostics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,12 @@ public class ServiceRegistryController extends ControllerSupport{
 
     @GetMapping("/serviceregistry")
     public ResponseEntity<GenericResponse<List<ChenileRemoteServiceDefinition>>> list(
+            HttpServletRequest httpServletRequest){
+        return process(httpServletRequest);
+    }
+
+    @GetMapping("/serviceregistry/diagnostics")
+    public ResponseEntity<GenericResponse<ServiceRegistryDiagnostics>> diagnostics(
             HttpServletRequest httpServletRequest){
         return process(httpServletRequest);
     }
