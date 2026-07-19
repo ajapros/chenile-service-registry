@@ -12,6 +12,7 @@ public class ChenileRemoteParamDefinition extends BaseJpaEntity {
     public  String name;
     public  String description;
     public  String paramClassName;
+    @Column(name = "param_type_reference")
     public  String paramTypeReference;
     @Enumerated(EnumType.STRING)
     public  HttpBindingType type;
