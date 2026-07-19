@@ -5,7 +5,9 @@ import org.chenile.core.model.HttpBindingType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -67,7 +69,7 @@ public final class ServiceRegistryFingerprint {
     }
 
     public static List<ChenileRemoteParamDefinition> normalizeParams(List<ChenileRemoteParamDefinition> params) {
-        return normalize(params, ServiceRegistryFingerprint::paramFingerprint);
+        return normalizePreservingOrder(params, ServiceRegistryFingerprint::paramFingerprint);
     }
 
     public static String operationFingerprint(ChenileRemoteOperationDefinition operation) {
@@ -82,6 +84,7 @@ public final class ServiceRegistryFingerprint {
                 nullSafe(operation.httpMethod),
                 nullSafe(operation.getOutputAsStringReference()),
                 listKey(operation.clientInterceptorNames),
+                listKey(operation.bodyTypeSelectorComponentNames),
                 paramListKey(operation.params));
     }
 
@@ -92,6 +95,7 @@ public final class ServiceRegistryFingerprint {
                 nullSafe(param.name),
                 nullSafe(param.description),
                 nullSafe(param.paramClassName),
+                nullSafe(param.paramTypeReference),
                 nullSafe(param.type));
     }
 
@@ -110,7 +114,7 @@ public final class ServiceRegistryFingerprint {
         return String.join(" ",
                 nullSafe(param.type),
                 nullSafe(param.name),
-                nullSafe(param.paramClassName)).trim();
+                nullSafe(param.paramTypeReference != null ? param.paramTypeReference : param.paramClassName)).trim();
     }
 
     private static String operationListKey(List<ChenileRemoteOperationDefinition> operations) {
@@ -138,6 +142,16 @@ public final class ServiceRegistryFingerprint {
                 .stream()
                 .sorted(Comparator.comparing(keyExtractor))
                 .toList();
+    }
+
+    private static <T> List<T> normalizePreservingOrder(List<T> items, Function<T, String> keyExtractor) {
+        if (items == null)
+            return null;
+        Map<String, T> uniqueItems = new LinkedHashMap<>();
+        for (T item : items) {
+            uniqueItems.putIfAbsent(keyExtractor.apply(item), item);
+        }
+        return new ArrayList<>(uniqueItems.values());
     }
 
     private static int compareVersionPart(String first, String second) {

@@ -37,7 +37,7 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
     }
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
-    @OrderBy("name ASC, url ASC")
+    @OrderColumn(name = "operation_order")
     public List<ChenileRemoteOperationDefinition> operations;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -45,6 +45,7 @@ public class ChenileRemoteServiceDefinition extends BaseJpaEntity {
             name = "client_service_interceptors",
             joinColumns = @JoinColumn(name = "id", referencedColumnName = "ID")
     )
+    @OrderColumn(name = "interceptor_order")
     @Column(name = "interceptor_name")
     public List<String> clientInterceptorNames;
     @Transient public List<Command<RemoteChenileExchange>> clientInterceptors ;

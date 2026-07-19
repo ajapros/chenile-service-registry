@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,11 @@ public class ServiceRegistryServiceImpl implements ServiceRegistryService {
                 return exactMatch.get();
             }
             logger.warn("Service registry definition changed without version bump. serviceId={} serviceVersion={}. "
-                    + "Not creating a duplicate registry row.", entity.serviceId, entity.serviceVersion);
+                    + "Refreshing the canonical registry row from local runtime metadata.", entity.serviceId,
+                    entity.serviceVersion);
+            refreshCanonical(canonical, incoming);
+            canonical = serviceregistryRepository.saveAndFlush(canonical);
+            serviceRegistryCache.store(canonical);
             return canonical;
         }
         try {
@@ -179,6 +184,31 @@ public class ServiceRegistryServiceImpl implements ServiceRegistryService {
                         .orElse(existing.get(0)));
         existing.forEach(serviceRegistryCache::store);
         return exactMatch;
+    }
+
+    private void refreshCanonical(ChenileRemoteServiceDefinition canonical,
+                                  ChenileRemoteServiceDefinition incoming) {
+        canonical.baseUrl = incoming.baseUrl;
+        canonical.serviceId = incoming.serviceId;
+        canonical.serviceVersion = incoming.serviceVersion;
+        canonical.moduleName = incoming.moduleName;
+        canonical.healthCheckerName = incoming.healthCheckerName;
+        canonical.clientInterceptorNames = replaceList(canonical.clientInterceptorNames, incoming.clientInterceptorNames);
+        canonical.operations = replaceList(canonical.operations, incoming.operations);
+    }
+
+    private <T> List<T> replaceList(List<T> existing, List<T> incoming) {
+        if (incoming == null)
+            return null;
+        if (existing == null)
+            return new ArrayList<>(incoming);
+        try {
+            existing.clear();
+            existing.addAll(incoming);
+            return existing;
+        } catch (UnsupportedOperationException ignored) {
+            return new ArrayList<>(incoming);
+        }
     }
 
     private boolean isBlank(String value) {

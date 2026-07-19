@@ -51,16 +51,18 @@ class ServiceRegistryServiceImplTest {
     }
 
     @Test
-    void saveDoesNotInsertWhenSameServiceVersionChangedWithoutVersionBump() {
+    void saveRefreshesCanonicalRowWhenSameServiceVersionChangedWithoutVersionBump() {
         ChenileRemoteServiceDefinition existing = sampleService("row-1");
         ChenileRemoteServiceDefinition incoming = sampleService(null);
         incoming.operations.get(0).url = "/orders/search/v2";
         when(repository.findByServiceIdAndServiceVersion("orders", "v1")).thenReturn(List.of(existing));
+        when(repository.saveAndFlush(existing)).thenReturn(existing);
 
         ChenileRemoteServiceDefinition saved = service.save(incoming);
 
         assertSame(existing, saved);
-        verify(repository, never()).save(any());
+        assertEquals("/orders/search/v2", existing.operations.get(0).url);
+        verify(repository).saveAndFlush(existing);
     }
 
     @Test

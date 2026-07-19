@@ -48,6 +48,28 @@ class ServiceRegistryCacheTest {
     }
 
     @Test
+    void existsReturnsFalseWhenParamInvocationOrderChanges() {
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
+        cache.store(sampleWorkflowService());
+
+        ChenileRemoteServiceDefinition changed = sampleWorkflowService();
+        changed.operations.get(0).params = List.of(eventIdParam(), eventPayloadParam(), idParam());
+
+        assertFalse(cache.exists(changed));
+    }
+
+    @Test
+    void existsReturnsFalseWhenBodyTypeSelectorsChange() {
+        ServiceRegistryCache cache = new ServiceRegistryCache(false);
+        cache.store(sampleWorkflowService());
+
+        ChenileRemoteServiceDefinition changed = sampleWorkflowService();
+        changed.operations.get(0).bodyTypeSelectorComponentNames = List.of("alternateBodySelector");
+
+        assertFalse(cache.exists(changed));
+    }
+
+    @Test
     void existsReturnsTrueWhenRetrievedOperationsContainDuplicateJoinRows() {
         ServiceRegistryCache cache = new ServiceRegistryCache(false);
         ChenileRemoteServiceDefinition persisted = sampleService();
@@ -182,6 +204,59 @@ class ServiceRegistryCacheTest {
         param.name = "request";
         param.description = "Search request";
         param.paramClassName = "java.lang.String";
+        param.type = HttpBindingType.BODY;
+        return param;
+    }
+
+    private ChenileRemoteServiceDefinition sampleWorkflowService() {
+        ChenileRemoteServiceDefinition service = new ChenileRemoteServiceDefinition();
+        service.baseUrl = "http://localhost:8080";
+        service.serviceId = "activityStateEntityService";
+        service.serviceVersion = "2.1.26";
+        service.moduleName = "workflow-module";
+        service.operations = List.of(sampleWorkflowOperation());
+        return service;
+    }
+
+    private ChenileRemoteOperationDefinition sampleWorkflowOperation() {
+        ChenileRemoteOperationDefinition operation = new ChenileRemoteOperationDefinition();
+        operation.description = "Process workflow event";
+        operation.name = "processById";
+        operation.consumes = "JSON";
+        operation.url = "/activity-state/{id}/process";
+        operation.output = "java.lang.String";
+        operation.httpMethod = HTTPMethod.POST;
+        operation.bodyTypeSelectorComponentNames = List.of("workflowBodySelector");
+        operation.params = List.of(idParam(), eventIdParam(), eventPayloadParam());
+        return operation;
+    }
+
+    private ChenileRemoteParamDefinition idParam() {
+        ChenileRemoteParamDefinition param = new ChenileRemoteParamDefinition();
+        param.name = "id";
+        param.description = "Workflow id";
+        param.paramClassName = "java.lang.String";
+        param.paramTypeReference = "java.lang.String";
+        param.type = HttpBindingType.HEADER;
+        return param;
+    }
+
+    private ChenileRemoteParamDefinition eventIdParam() {
+        ChenileRemoteParamDefinition param = new ChenileRemoteParamDefinition();
+        param.name = "eventID";
+        param.description = "Workflow event";
+        param.paramClassName = "java.lang.String";
+        param.paramTypeReference = "java.lang.String";
+        param.type = HttpBindingType.HEADER;
+        return param;
+    }
+
+    private ChenileRemoteParamDefinition eventPayloadParam() {
+        ChenileRemoteParamDefinition param = new ChenileRemoteParamDefinition();
+        param.name = "eventPayload";
+        param.description = "Workflow event payload";
+        param.paramClassName = "java.lang.Object";
+        param.paramTypeReference = "java.lang.Object";
         param.type = HttpBindingType.BODY;
         return param;
     }

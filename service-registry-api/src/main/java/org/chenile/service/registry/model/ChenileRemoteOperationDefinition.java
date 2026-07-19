@@ -24,7 +24,7 @@ public class ChenileRemoteOperationDefinition extends BaseJpaEntity {
     public String description;
     public String name;
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
-    @OrderBy("name ASC, paramClassName ASC")
+    @OrderColumn(name = "param_order")
     public List<ChenileRemoteParamDefinition> params;
     public String consumes = "JSON";
     public String url;
@@ -47,14 +47,26 @@ public class ChenileRemoteOperationDefinition extends BaseJpaEntity {
             name = "client_op_interceptors",
             joinColumns = @JoinColumn(name = "id", referencedColumnName = "ID")
     )
+    @OrderColumn(name = "interceptor_order")
     @Column(name = "interceptor_name")
     public List<String> clientInterceptorNames;
     @JsonIgnore @Transient
     public List<Command<RemoteChenileExchange>> clientInterceptors ;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "operation_definition_body_type_selectors",
+            joinColumns = @JoinColumn(name = "operation_definition_id", referencedColumnName = "ID")
+    )
+    @OrderColumn(name = "selector_order")
+    @Column(name = "selector_name")
+    public List<String> bodyTypeSelectorComponentNames;
 
     public ChenileRemoteOperationDefinition(){}
     public ChenileRemoteOperationDefinition(OperationDefinition od) {
         this.clientInterceptorNames = od.getClientInterceptorComponentNames();
+        this.bodyTypeSelectorComponentNames = od.getBodyTypeSelectorComponentNames() == null
+                ? null
+                : List.of(od.getBodyTypeSelectorComponentNames());
         this.name = od.getName();
         this.url = od.getUrl();
         this.httpMethod = od.getHttpMethod();
