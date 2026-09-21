@@ -11,10 +11,12 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class ServiceRegistryClientImplTest {
     @Test
@@ -38,4 +40,17 @@ class ServiceRegistryClientImplTest {
         assertSame(definition, saved);
         assertNull(cache.retrieve("orders", "v1"));
     }
+
+	@Test
+	void readOnlyModeRejectsSaveWithoutCallingRemoteRegistry() {
+		RestTemplate restTemplate = mock(RestTemplate.class);
+		ServiceRegistryClientImpl client = new ServiceRegistryClientImpl(restTemplate);
+		ReflectionTestUtils.setField(client, "readOnly", true);
+
+		IllegalStateException exception = assertThrows(IllegalStateException.class,
+				() -> client.save(new ChenileRemoteServiceDefinition()));
+
+		org.junit.jupiter.api.Assertions.assertTrue(exception.getMessage().contains("read-only"));
+		verifyNoInteractions(restTemplate);
+	}
 }

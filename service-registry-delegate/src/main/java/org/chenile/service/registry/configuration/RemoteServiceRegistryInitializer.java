@@ -4,7 +4,6 @@ import org.chenile.core.model.ChenileConfiguration;
 import org.chenile.core.model.ChenileServiceDefinition;
 import org.chenile.service.registry.model.ChenileRemoteServiceDefinition;
 import org.chenile.service.registry.service.ServiceRegistryService;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -12,7 +11,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 import java.util.Map;
 
@@ -22,6 +20,8 @@ public class RemoteServiceRegistryInitializer implements ApplicationListener<App
 
     @Value("${chenile.remote.service.registry:}")
     private String chenileRemoteServiceRegistry;
+    @Value("${chenile.service.registry.read-only:false}")
+    boolean readOnly;
 
     @Autowired
     ChenileConfiguration chenileConfiguration;
@@ -33,9 +33,15 @@ public class RemoteServiceRegistryInitializer implements ApplicationListener<App
     public void onApplicationEvent(ApplicationReadyEvent event) {
         if (chenileRemoteServiceRegistry.isEmpty())
             return;
+        if (readOnly) {
+            return;
+        }
         // push all the beans that are registered to the remote service registry
         for (Map.Entry<String, ChenileServiceDefinition> entry: chenileConfiguration.getServices().entrySet()){
             ChenileServiceDefinition sd = entry.getValue();
+            if (!sd.isRegisterInServiceRegistry()) {
+                continue;
+            }
             serviceRegistryService.save(new ChenileRemoteServiceDefinition(sd));
         }
     }

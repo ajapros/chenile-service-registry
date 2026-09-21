@@ -26,6 +26,8 @@ public class ServiceRegistryInitializer implements ApplicationListener<Applicati
     private static Logger logger = LoggerFactory.getLogger(ServiceRegistryInitializer.class);
     @Value("${chenile.remote.service.registry:}")
     private String chenileRemoteServiceRegistry;
+    @Value("${chenile.service.registry.read-only:false}")
+    boolean readOnly;
 
     @Autowired
     ServiceRegistryCache serviceRegistryCache;
@@ -43,6 +45,11 @@ public class ServiceRegistryInitializer implements ApplicationListener<Applicati
         // this ensures that we start gracefully from where we left.
         for (ChenileRemoteServiceDefinition service:  repository.findAll()){
             serviceRegistryCache.store(service);
+        }
+
+        if (readOnly) {
+            logger.info("Service registry is read-only; skipping publication of local service definitions.");
+            return;
         }
 
         // push all the beans from the local chenile configuration to the service registry

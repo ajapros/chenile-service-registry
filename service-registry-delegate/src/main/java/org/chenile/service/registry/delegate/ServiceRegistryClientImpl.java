@@ -24,6 +24,8 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
     Logger logger = LoggerFactory.getLogger(getClass());
     @Value("${chenile.remote.service.registry:}")
     private String chenileRemoteServiceRegistry;
+    @Value("${chenile.service.registry.read-only:false}")
+    private boolean readOnly;
     private final RestTemplate restTemplate;
     ObjectMapper objectMapper = new ObjectMapper();
     /**
@@ -47,6 +49,9 @@ public class ServiceRegistryClientImpl implements ServiceRegistryService {
     @Override
     @CachePut("xxx")
     public ChenileRemoteServiceDefinition save(ChenileRemoteServiceDefinition serviceDefinition) {
+		if (readOnly) {
+			throw new IllegalStateException("Service registry is read-only; publication is disabled.");
+		}
         ChenileRemoteServiceDefinition remoteDefinition = writeToRemote(serviceDefinition);
         if (remoteDefinition == null) {
             logger.warn("Service definition was not written to remote service registry. serviceId={} serviceVersion={}",
