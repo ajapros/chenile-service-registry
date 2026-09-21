@@ -48,6 +48,10 @@ public class ServiceRegistryInitializer implements ApplicationListener<Applicati
         // push all the beans from the local chenile configuration to the service registry
         for (Map.Entry<String, ChenileServiceDefinition> entry: chenileConfiguration.getServices().entrySet()){
             ChenileServiceDefinition sd = entry.getValue();
+			if (!sd.isRegisterInServiceRegistry()) {
+				logger.info("Skipping remote service registry publication for service {}", sd.getId());
+				continue;
+			}
             ChenileRemoteServiceDefinition csrd = new ChenileRemoteServiceDefinition(sd);
             logger.info("Storing service " + csrd.serviceId + " and version = " + csrd.serviceVersion);
             serviceRegistryService.save(csrd);
